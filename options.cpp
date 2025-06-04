@@ -360,6 +360,16 @@ void Options::read_config()
     });
 }
 
+void Options::read_envvars()
+{
+    for (auto &pair : m_from_config) {
+        auto val = zterp_os_get_named_envvar(pair.first);
+        if (val) {
+            pair.second(*val);
+        }
+    }
+}
+
 int Options::getopt(int argc, char *const argv[])
 {
     int optind = 0;

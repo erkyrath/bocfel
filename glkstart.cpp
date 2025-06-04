@@ -6,6 +6,7 @@
 #include <string>
 
 #include "options.h"
+#include "osdep.h"
 #include "screen.h"
 #include "types.h"
 #include "zterp.h"
@@ -54,8 +55,10 @@ static strid_t load_file(const std::string &file)
 bool glkstart_library_autosave()
 {
     //### extra_state?
+
+    auto autosavepath = zterp_os_autosave_name();
+    std::string pathname = *autosavepath + ".json";
     
-    std::string pathname = "AUTO.json"; //###
     strid_t jsavefile = glkunix_stream_open_pathname_gen(const_cast<char *>(pathname.c_str()), TRUE, FALSE, 1);
     if (!jsavefile) {
         return false;

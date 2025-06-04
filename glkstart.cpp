@@ -9,6 +9,7 @@
 #include "screen.h"
 #include "types.h"
 #include "zterp.h"
+#include "autosave.h"
 
 extern "C" {
 #include <glk.h>
@@ -49,6 +50,31 @@ static strid_t load_file(const std::string &file)
     return glkunix_stream_open_pathname(const_cast<char *>(file.c_str()), 0, 0);
 }
 #endif
+
+bool glkstart_library_autosave()
+{
+    //### extra_state?
+    
+    std::string pathname = "AUTO.json"; //###
+    strid_t jsavefile = glkunix_stream_open_pathname_gen(const_cast<char *>(pathname.c_str()), TRUE, FALSE, 1);
+    if (!jsavefile) {
+        return false;
+    }
+    
+    glkunix_save_library_state(jsavefile, jsavefile, NULL, NULL);
+
+    glk_stream_close(jsavefile, NULL);
+    jsavefile = NULL;
+
+    return true;
+}
+
+bool glkstart_library_autorestore()
+{
+    //### glkunix_update_from_library_state()
+
+    return true;
+}
 
 int glkunix_startup_code(glkunix_startup_t *data)
 {

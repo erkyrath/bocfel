@@ -34,6 +34,7 @@
 #include "types.h"
 #include "util.h"
 #include "zterp.h"
+#include "autosave.h"
 
 using namespace std::literals;
 
@@ -1268,6 +1269,12 @@ bool do_save(SaveType savetype, SaveOpcode saveopcode)
         return false;
     }
 
+    if (savetype == SaveType::Autosave) {
+        if (!glkstart_library_autosave()) {
+            return false;
+        }
+    }
+    
     return true;
 }
 
@@ -1301,7 +1308,17 @@ bool do_restore(SaveType savetype, SaveOpcode &saveopcode)
         return false;
     }
 
-    return restore_quetzal(savefile, savetype, saveopcode, true);
+    if (!restore_quetzal(savefile, savetype, saveopcode, true)) {
+        return false;
+    }
+
+    if (savetype == SaveType::Autosave) {
+        if (!glkstart_library_autorestore()) {
+            return false;
+        }
+    }
+    
+    return true;
 }
 
 void zrestore()

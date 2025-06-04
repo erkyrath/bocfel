@@ -298,7 +298,7 @@ void process_instructions()
 {
     static bool handled_autosave = false;
 
-    if (options.autosave && !handled_autosave) {
+    if (options.autosave && !options.skip_autorestore && !handled_autosave) {
         SaveOpcode saveopcode;
 
         handled_autosave = true;

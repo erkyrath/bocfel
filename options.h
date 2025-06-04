@@ -61,6 +61,7 @@ struct Options {
     std::unique_ptr<std::string> random_device = nullptr;
 
     bool autosave = false;
+    bool skip_autorestore = false;
     bool persistent_transcript = false;
     std::unique_ptr<std::string> editor = nullptr;
     bool warn_on_v6 = true;

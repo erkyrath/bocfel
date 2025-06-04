@@ -361,6 +361,17 @@ std::unique_ptr<std::string> zterp_os_aux_file(const std::string &filename_)
 }
 #define have_zterp_os_aux_file
 
+std::unique_ptr<std::string> zterp_os_get_named_envvar(std::string key)
+{
+    std::ostringstream ss;
+    ss << "BOCFEL_";
+    for (char ch : key) {
+        ss << std::toupper(ch);
+    }
+
+    return env(ss.str());
+}
+
 static pid_t launch_editor(const std::string &filename)
 {
     // A list of possible text editors. The user can specify a text

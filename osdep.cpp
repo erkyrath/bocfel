@@ -366,7 +366,7 @@ std::unique_ptr<std::string> zterp_os_get_named_envvar(std::string key)
     std::ostringstream ss;
     ss << "BOCFEL_";
     for (char ch : key) {
-        ss << std::toupper(ch);
+        ss << (char) std::toupper(ch);
     }
 
     return env(ss.str());

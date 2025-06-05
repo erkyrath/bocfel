@@ -52,6 +52,7 @@ static strid_t load_file(const std::string &file)
 }
 #endif
 
+#ifdef GLKUNIX_AUTOSAVE_FEATURES
 bool glkstart_library_autosave()
 {
     auto autosavepath = zterp_os_autosave_name();
@@ -104,6 +105,7 @@ bool glkstart_library_autorestore()
     
     return true;
 }
+#endif /* GLKUNIX_AUTOSAVE_FEATURES */
 
 int glkunix_startup_code(glkunix_startup_t *data)
 {

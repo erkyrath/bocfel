@@ -142,6 +142,50 @@ static long upper_window_height = 0;
 static long upper_window_width = 0;
 static winid_t errorwin;
 
+enum class WindowRock : glui32 {
+    MainWin = 1,
+    UpperWin = 2,
+    // windows[2-7] are going to be copies of mainwin if they are used at all
+    StatusWin = 3,
+    ErrorWin = 4,
+    // graphics windows are not currently managed by this scheme
+};
+
+void recover_glk_windows()
+{
+    statuswin.id = nullptr;
+    errorwin = nullptr;
+    for (auto &win : windows)
+        win.id = nullptr;
+    
+    glui32 rock = 0;
+    winid_t win = nullptr;
+    for (win = glk_window_iterate(nullptr, &rock); win; win = glk_window_iterate(win, &rock)) {
+        switch (static_cast<WindowRock>(rock)) {
+        case WindowRock::MainWin:
+            mainwin->id = win;
+            break;
+        case WindowRock::UpperWin:
+            upperwin->id = win;
+            break;
+        case WindowRock::StatusWin:
+            statuswin.id = win;
+            break;
+        case WindowRock::ErrorWin:
+            errorwin = win;
+            break;
+        }
+    }
+
+    // Redirect windows 2-7 -- see note in init_screen().
+    if (options.redirect_v6_windows) {
+        for (int i = 2; i < 8; i++) {
+            windows[i].id = windows[0].id;
+        }
+    }
+    
+}
+
 #ifdef ZTERP_GLK_GRAPHICS
 
 #ifndef GLK_MODULE_GARGLKWINSIZE
@@ -1028,7 +1072,7 @@ void show_message(const char *fmt, ...)
 
         glk_put_char_stream(glk_window_get_stream(errorwin), LATIN1_LINEFEED);
     } else {
-        errorwin = glk_window_open(mainwin->id, winmethod_Below | winmethod_Fixed, error_lines = 2, wintype_TextBuffer, 0);
+        errorwin = glk_window_open(mainwin->id, winmethod_Below | winmethod_Fixed, error_lines = 2, wintype_TextBuffer, static_cast<glui32>(WindowRock::ErrorWin));
     }
 
     // If windows are not supported (e.g. in cheapglk or no Glk), messages
@@ -4218,7 +4262,7 @@ bool create_mainwin()
     find_window_size(nullptr);
 #endif
 
-    mainwin->id = glk_window_open(nullptr, 0, 0, wintype_TextBuffer, 1);
+    mainwin->id = glk_window_open(nullptr, 0, 0, wintype_TextBuffer, static_cast<glui32>(WindowRock::MainWin));
     if (mainwin->id == nullptr) {
         return false;
     }
@@ -4240,7 +4284,7 @@ bool create_mainwin()
 bool create_statuswin()
 {
 #ifdef ZTERP_GLK
-    statuswin.id = glk_window_open(mainwin->id, winmethod_Above | winmethod_Fixed, 1, wintype_TextGrid, 0);
+    statuswin.id = glk_window_open(mainwin->id, winmethod_Above | winmethod_Fixed, 1, wintype_TextGrid, static_cast<glui32>(WindowRock::StatusWin));
     return statuswin.id != nullptr;
 #else
     return false;
@@ -4256,7 +4300,7 @@ bool create_upperwin()
             winmethod_Below :
             winmethod_Above;
 
-        upperwin->id = glk_window_open(mainwin->id, location | winmethod_Fixed, 0, wintype_TextGrid, 0);
+        upperwin->id = glk_window_open(mainwin->id, location | winmethod_Fixed, 0, wintype_TextGrid, static_cast<glui32>(WindowRock::UpperWin));
         upperwin->x = upperwin->y = 0;
         upper_window_height = 0;
 

@@ -77,6 +77,8 @@ void screen_flush();
 
 #ifdef ZTERP_GLK
 
+void recover_glk_windows();
+
 #ifdef GLK_MODULE_GARGLKTEXT
 void update_color(int which, unsigned long color);
 #endif

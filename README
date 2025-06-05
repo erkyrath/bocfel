@@ -1,3 +1,12 @@
+This repository is a development fork. Bocfel resides in a subdirectory
+of the Gargoyle repository:
+
+https://github.com/garglk/garglk/tree/master/terps/bocfel
+
+Changes here will (I hope) make their way upstream in time.
+
+--------------
+
 Bocfel is an interpreter for the Z-machine, which means that it plays text
 adventure games. For more information on the Z-machine and interpreters, please
 see http://en.wikipedia.org/wiki/Z-machine.

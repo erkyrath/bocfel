@@ -1147,7 +1147,12 @@ static bool restore_quetzal(const std::shared_ptr<IO> &savefile, SaveType savety
         }
 
         if (iff->find(IFF::TypeID("Bfhs"), size)) {
-            if (savetype == SaveType::Autosave || !options.disable_history_playback) {
+            // In the regular restore case, we display the history (from
+            // the save file) unless this is disabled by the -H option.
+            // We always redisplay after an autosave, unless we're doing
+            // a library-state autosave, in which case we don't need to.
+            if ((savetype == SaveType::Autosave && !options.autosave_librarystate)
+                || !options.disable_history_playback) {
                 try {
                     long start = iff->io()->tell();
 

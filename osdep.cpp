@@ -342,9 +342,17 @@ static std::unique_ptr<std::string> data_file(const std::string &filename)
 
 std::unique_ptr<std::string> zterp_os_autosave_name()
 {
-    std::string filename = "autosave/"s + unique_name();
-
-    return data_file(filename);
+    if (options.autosave_directory != nullptr) {
+        std::string filename = *options.autosave_directory + "/"s + unique_name();
+        if (!mkdir_p(filename)) {
+            return nullptr;
+        }
+        return std::make_unique<std::string>(filename);
+    }
+    else {
+        std::string filename = "autosave/"s + unique_name();
+        return data_file(filename);
+    }
 }
 #define have_zterp_os_autosave_name
 

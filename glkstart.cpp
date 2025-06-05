@@ -54,8 +54,6 @@ static strid_t load_file(const std::string &file)
 
 bool glkstart_library_autosave()
 {
-    //### extra_state?
-
     auto autosavepath = zterp_os_autosave_name();
     std::string pathname = *autosavepath + ".json";
     
@@ -74,7 +72,6 @@ bool glkstart_library_autosave()
 
 bool glkstart_library_autorestore()
 {
-    printf("### autorestore, load_library_state\n");
     auto autosavepath = zterp_os_autosave_name();
     std::string pathname = *autosavepath + ".json";
 

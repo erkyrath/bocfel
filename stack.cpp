@@ -1303,6 +1303,13 @@ void zsave()
 // this is.
 bool do_restore(SaveType savetype, SaveOpcode &saveopcode)
 {
+    if (savetype == SaveType::Autosave) {
+        //### lib pref
+        if (!glkstart_library_autorestore()) {
+            return false;
+        }
+    }
+    
     auto savefile = open_savefile(savetype, IO::Mode::ReadOnly);
     if (savefile == nullptr) {
         return false;
@@ -1312,12 +1319,6 @@ bool do_restore(SaveType savetype, SaveOpcode &saveopcode)
         return false;
     }
 
-    if (savetype == SaveType::Autosave) {
-        if (!glkstart_library_autorestore()) {
-            return false;
-        }
-    }
-    
     return true;
 }
 

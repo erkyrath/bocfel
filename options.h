@@ -62,6 +62,7 @@ struct Options {
 
     bool autosave = false;
     bool skip_autorestore = false;
+    bool autosave_librarystate = false;
     bool persistent_transcript = false;
     std::unique_ptr<std::string> editor = nullptr;
     bool warn_on_v6 = true;

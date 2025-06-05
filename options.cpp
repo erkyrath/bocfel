@@ -204,6 +204,7 @@ Options::Options() {
 
     BOOL  (0, "", true, autosave);
     BOOL  (0, "", true, skip_autorestore);
+    BOOL  (0, "", true, autosave_librarystate);
     BOOL  (0, "", true, persistent_transcript);
     STRING(0, "", true, editor);
     BOOL  (0, "", true, warn_on_v6);

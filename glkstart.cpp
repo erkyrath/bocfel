@@ -52,9 +52,10 @@ static strid_t load_file(const std::string &file)
 }
 #endif
 
-#ifdef GLKUNIX_AUTOSAVE_FEATURES
 bool glkstart_library_autosave()
 {
+#ifdef GLKUNIX_AUTOSAVE_FEATURES
+
     auto autosavepath = zterp_os_autosave_name();
     std::string pathname = *autosavepath + ".json";
     
@@ -67,12 +68,16 @@ bool glkstart_library_autosave()
 
     glk_stream_close(jsavefile, NULL);
     jsavefile = NULL;
+    
+#endif /* GLKUNIX_AUTOSAVE_FEATURES */
 
     return true;
 }
 
 bool glkstart_library_autorestore()
 {
+#ifdef GLKUNIX_AUTOSAVE_FEATURES
+    
     auto autosavepath = zterp_os_autosave_name();
     std::string pathname = *autosavepath + ".json";
 
@@ -103,9 +108,10 @@ bool glkstart_library_autorestore()
     /* Let the interpreter recover window IDs. */
     recover_glk_windows();
     
+#endif /* GLKUNIX_AUTOSAVE_FEATURES */
+
     return true;
 }
-#endif /* GLKUNIX_AUTOSAVE_FEATURES */
 
 int glkunix_startup_code(glkunix_startup_t *data)
 {

@@ -1269,13 +1269,11 @@ bool do_save(SaveType savetype, SaveOpcode saveopcode)
         return false;
     }
 
-#ifdef GLKUNIX_AUTOSAVE_FEATURES
     if (savetype == SaveType::Autosave && options.autosave_librarystate) {
         if (!glkstart_library_autosave()) {
             return false;
         }
     }
-#endif /* GLKUNIX_AUTOSAVE_FEATURES */
     
     return true;
 }
@@ -1305,13 +1303,11 @@ void zsave()
 // this is.
 bool do_restore(SaveType savetype, SaveOpcode &saveopcode)
 {
-#ifdef GLKUNIX_AUTOSAVE_FEATURES
     if (savetype == SaveType::Autosave && options.autosave_librarystate) {
         if (!glkstart_library_autorestore()) {
             return false;
         }
     }
-#endif /* GLKUNIX_AUTOSAVE_FEATURES */
     
     auto savefile = open_savefile(savetype, IO::Mode::ReadOnly);
     if (savefile == nullptr) {

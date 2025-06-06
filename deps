@@ -28,7 +28,7 @@ screen.o: unicode.h zterp.h
 sound.o: sound.h types.h iff.h io.h process.h stack.h zterp.h
 stack.o: stack.h types.h branch.h iff.h io.h memory.h meta.h options.h
 stack.o: osdep.h screen.h util.h process.h random.h stash.h zterp.h
-stack.o: autosave.h
+stack.o: glkautosave.h
 stash.o: stash.h types.h
 unicode.o: unicode.h types.h memory.h options.h stack.h util.h zterp.h
 util.o: util.h types.h process.h stack.h screen.h iff.h io.h zterp.h
@@ -37,4 +37,6 @@ zterp.o: zterp.h types.h blorb.h iff.h io.h branch.h memory.h meta.h
 zterp.o: options.h stack.h osdep.h screen.h util.h patches.h process.h
 zterp.o: random.h sound.h unicode.h v1234.h
 glkstart.o: options.h stack.h types.h osdep.h screen.h iff.h io.h util.h
-glkstart.o: zterp.h autosave.h
+glkstart.o: zterp.h
+glkautosave.o: options.h stack.h types.h osdep.h screen.h iff.h io.h util.h
+glkautosave.o: glkautosave.h

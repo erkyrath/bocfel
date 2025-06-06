@@ -202,7 +202,7 @@ static void load_resources()
 {
 #ifdef ZTERP_GLK_BLORB
     auto set_map = [](const std::string &blorb_file) {
-        strid_t file = load_file(blorb_file);
+        strid_t file = load_file(blorb_file, StreamRock::BlorbStream);
         if (file != nullptr) {
             if (giblorb_set_resource_map(file) == giblorb_err_None) {
                 screen_load_scale_info(blorb_file);

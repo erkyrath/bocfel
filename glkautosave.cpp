@@ -7,7 +7,7 @@
 
 #include "options.h"
 #include "osdep.h"
-#include "autosave.h"
+#include "glkautosave.h"
 
 bool glkautosave_library_autosave()
 {

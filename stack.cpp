@@ -34,7 +34,7 @@
 #include "types.h"
 #include "util.h"
 #include "zterp.h"
-#include "autosave.h"
+#include "glkautosave.h"
 
 using namespace std::literals;
 

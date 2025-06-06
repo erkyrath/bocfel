@@ -1323,11 +1323,7 @@ bool do_restore(SaveType savetype, SaveOpcode &saveopcode)
         return false;
     }
 
-    if (!restore_quetzal(savefile, savetype, saveopcode, true)) {
-        return false;
-    }
-
-    return true;
+    return restore_quetzal(savefile, savetype, saveopcode, true);
 }
 
 void zrestore()

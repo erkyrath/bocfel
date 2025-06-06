@@ -1274,11 +1274,13 @@ bool do_save(SaveType savetype, SaveOpcode saveopcode)
         return false;
     }
 
+#ifdef ZTERP_GLK
     if (savetype == SaveType::Autosave && options.autosave_librarystate) {
         if (!glkautosave_library_autosave()) {
             return false;
         }
     }
+#endif
     
     return true;
 }
@@ -1308,11 +1310,13 @@ void zsave()
 // this is.
 bool do_restore(SaveType savetype, SaveOpcode &saveopcode)
 {
+#ifdef ZTERP_GLK
     if (savetype == SaveType::Autosave && options.autosave_librarystate) {
         if (!glkautosave_library_autorestore()) {
             return false;
         }
     }
+#endif
     
     auto savefile = open_savefile(savetype, IO::Mode::ReadOnly);
     if (savefile == nullptr) {

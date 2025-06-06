@@ -9,6 +9,11 @@
 #include "osdep.h"
 #include "glkautosave.h"
 
+extern "C" {
+#include <gi_blorb.h>
+#include <glkstart.h>
+}
+
 bool glkautosave_library_autosave()
 {
 #ifdef GLKUNIX_AUTOSAVE_FEATURES

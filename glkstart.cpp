@@ -6,7 +6,6 @@
 #include <string>
 
 #include "options.h"
-#include "osdep.h"
 #include "screen.h"
 #include "types.h"
 #include "zterp.h"

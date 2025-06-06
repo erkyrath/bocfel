@@ -34,7 +34,10 @@
 #include "types.h"
 #include "util.h"
 #include "zterp.h"
+
+#ifdef ZTERP_GLK
 #include "glkautosave.h"
+#endif
 
 using namespace std::literals;
 

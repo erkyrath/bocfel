@@ -1275,7 +1275,7 @@ bool do_save(SaveType savetype, SaveOpcode saveopcode)
     }
 
     if (savetype == SaveType::Autosave && options.autosave_librarystate) {
-        if (!glkstart_library_autosave()) {
+        if (!glkautosave_library_autosave()) {
             return false;
         }
     }
@@ -1309,7 +1309,7 @@ void zsave()
 bool do_restore(SaveType savetype, SaveOpcode &saveopcode)
 {
     if (savetype == SaveType::Autosave && options.autosave_librarystate) {
-        if (!glkstart_library_autorestore()) {
+        if (!glkautosave_library_autorestore()) {
             return false;
         }
     }

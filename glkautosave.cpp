@@ -9,7 +9,7 @@
 #include "osdep.h"
 #include "autosave.h"
 
-bool glkstart_library_autosave()
+bool glkautosave_library_autosave()
 {
 #ifdef GLKUNIX_AUTOSAVE_FEATURES
 
@@ -31,7 +31,7 @@ bool glkstart_library_autosave()
     return true;
 }
 
-bool glkstart_library_autorestore()
+bool glkautosave_library_autorestore()
 {
 #ifdef GLKUNIX_AUTOSAVE_FEATURES
     

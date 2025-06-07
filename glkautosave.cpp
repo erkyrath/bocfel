@@ -63,11 +63,28 @@ bool glkautosave_library_autorestore()
         return false;
     }
 
-    //### recover_extra_state, which will drop and reopen the giblorb_map_t.
-
     /* We're done with the library state object. */
     glkunix_library_state_free(library_state);
     library_state = NULL;
+
+    /* Recover the blorb stream ID, if we have one open. */
+    if (giblorb_get_resource_map()) {
+        printf("### map cleared\n");
+        /* It's inefficient to throw away the blorb chunk map, which we just loaded, and then recreate it. Oh well. */
+        if (giblorb_unset_resource_map())
+            return false;
+        
+        glui32 rock = 0;
+        strid_t str = nullptr;
+        for (str = glk_stream_iterate(nullptr, &rock); str; str = glk_stream_iterate(str, &rock)) {
+            if (rock == static_cast<glui32>(StreamRock::BlorbStream)) {
+                if (giblorb_set_resource_map(str))
+                    return false;
+                printf("### map reset\n");
+                break;
+            }
+        }
+    }
 
     /* Let the interpreter recover window IDs. */
     recover_glk_windows();

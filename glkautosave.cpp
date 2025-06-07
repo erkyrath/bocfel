@@ -69,7 +69,6 @@ bool glkautosave_library_autorestore()
 
     /* Recover the blorb stream ID, if we have one open. */
     if (giblorb_get_resource_map()) {
-        printf("### map cleared\n");
         /* It's inefficient to throw away the blorb chunk map, which we just loaded, and then recreate it. Oh well. */
         if (giblorb_unset_resource_map())
             return false;
@@ -80,7 +79,6 @@ bool glkautosave_library_autorestore()
             if (rock == static_cast<glui32>(StreamRock::BlorbStream)) {
                 if (giblorb_set_resource_map(str))
                     return false;
-                printf("### map reset\n");
                 break;
             }
         }

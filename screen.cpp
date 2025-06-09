@@ -153,11 +153,13 @@ enum class WindowRock : glui32 {
 
 void recover_glk_windows()
 {
+    glui32 tmpwid, tmphgt;
+    
     statuswin.id = nullptr;
     errorwin = nullptr;
     for (auto &win : windows)
         win.id = nullptr;
-    
+
     glui32 rock = 0;
     winid_t win = nullptr;
     for (win = glk_window_iterate(nullptr, &rock); win; win = glk_window_iterate(win, &rock)) {
@@ -167,6 +169,9 @@ void recover_glk_windows()
             break;
         case WindowRock::UpperWin:
             upperwin->id = win;
+            glk_window_get_size(upperwin->id, &tmpwid, &tmphgt);
+            upper_window_width = tmpwid;
+            upper_window_height = tmphgt;
             break;
         case WindowRock::StatusWin:
             statuswin.id = win;

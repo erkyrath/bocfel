@@ -390,10 +390,21 @@ void process_loop()
         } catch (const Operation::Restart &) {
             start_story();
         } catch (const Operation::Restore &restore) {
-            if (restore.saveopcode == SaveOpcode::Read) {
+            switch (restore.saveopcode) {
+            case SaveOpcode::Read:
                 synthetic_call = zread;
-            } else if (restore.saveopcode == SaveOpcode::ReadChar) {
+                break;
+            case SaveOpcode::ReadChar:
                 synthetic_call = zread_char;
+                break;
+            case SaveOpcode::Save:
+                if (zversion < 5)
+                    synthetic_call = zsave;
+                else
+                    synthetic_call = zsave5;
+                break;
+            default:
+                warning("restoring on unknown opcode %d", static_cast<int>(restore.saveopcode));
             }
         } catch (const Operation::Quit &) {
             break;

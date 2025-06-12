@@ -900,15 +900,23 @@ static void read_args(IFF &iff, SaveOpcode &saveopcode)
 
     // @read takes between 1 and 4 operands, @read_char takes
     // between 1 and 3.
+    // @save and @restore take none. (Args are possible in z5,
+    // but I haven't implemented that yet.)
     switch (saveopcode) {
     case SaveOpcode::Read:
         if (size != 2 && size != 4 && size != 6 && size != 8) {
-            throw RestoreError(fstring("invalid Args size: %lu", static_cast<unsigned long>(size)));
+            throw RestoreError(fstring("invalid Args size for %d: %lu", static_cast<int>(saveopcode), static_cast<unsigned long>(size)));
         }
         break;
     case SaveOpcode::ReadChar:
         if (size != 2 && size != 4 && size != 6) {
-            throw RestoreError(fstring("invalid Args size: %lu", static_cast<unsigned long>(size)));
+            throw RestoreError(fstring("invalid Args size for %d: %lu", static_cast<int>(saveopcode), static_cast<unsigned long>(size)));
+        }
+        break;
+    case SaveOpcode::Save:
+    case SaveOpcode::Restore:
+        if (size != 0) {
+            throw RestoreError(fstring("invalid Args size for %d: %lu", static_cast<int>(saveopcode), static_cast<unsigned long>(size)));
         }
         break;
     default:
@@ -1296,6 +1304,21 @@ void zsave()
     if (in_interrupt()) {
         store(0);
         return;
+    }
+
+    // Autosave before blocking on the fileref prompt. (Which will
+    // certainly happen down in the guts of do_save(), because there
+    // is no suggested filename.)
+    //
+    // Yes, it's goofy to call do_save() before do_save(), but that's
+    // what happens if you want to autosave every time the Z-machine
+    // waits for input.
+    // 
+    // (Note that we might have arrived here from zsave5().)
+    //
+    if (options.autosave) {
+        printf("### zsave autosave\n");
+        do_save(SaveType::Autosave, SaveOpcode::Save);
     }
 
     bool success = do_save(SaveType::Normal, SaveOpcode::None);

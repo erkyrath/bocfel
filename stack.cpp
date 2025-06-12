@@ -1317,7 +1317,6 @@ void zsave()
     // (Note that we might have arrived here from zsave5().)
     //
     if (options.autosave) {
-        printf("### zsave autosave\n");
         do_save(SaveType::Autosave, SaveOpcode::Save);
     }
 

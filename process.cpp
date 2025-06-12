@@ -391,6 +391,9 @@ void process_loop()
             start_story();
         } catch (const Operation::Restore &restore) {
             switch (restore.saveopcode) {
+            case SaveOpcode::None:
+                synthetic_call = nullptr;
+                break;
             case SaveOpcode::Read:
                 synthetic_call = zread;
                 break;
@@ -402,6 +405,12 @@ void process_loop()
                     synthetic_call = zsave;
                 else
                     synthetic_call = zsave5;
+                break;
+            case SaveOpcode::Restore:
+                if (zversion < 5)
+                    synthetic_call = zrestore;
+                else
+                    synthetic_call = zrestore5;
                 break;
             default:
                 warning("restoring on unknown opcode %d", static_cast<int>(restore.saveopcode));

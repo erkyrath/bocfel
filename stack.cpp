@@ -1353,6 +1353,17 @@ bool do_restore(SaveType savetype, SaveOpcode &saveopcode)
 
 void zrestore()
 {
+    // Autosave before blocking on the fileref prompt. (Which will
+    // certainly happen down in the guts of do_restore(), because there
+    // is no suggested filename.)
+    //
+    // 
+    // (Note that we might have arrived here from restore5().)
+    //
+    if (options.autosave) {
+        do_save(SaveType::Autosave, SaveOpcode::Restore);
+    }
+    
     SaveOpcode saveopcode;
     bool success = do_restore(SaveType::Normal, saveopcode);
 

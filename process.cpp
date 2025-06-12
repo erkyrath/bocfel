@@ -304,7 +304,9 @@ void process_instructions()
         handled_autosave = true;
 
         if (do_restore(SaveType::Autosave, saveopcode)) {
-            show_message("Continuing last session from autosave");
+            if (!options.autosave_librarystate) {
+                show_message("Continuing last session from autosave");
+            }
             throw Operation::Restore(saveopcode);
         }
     }

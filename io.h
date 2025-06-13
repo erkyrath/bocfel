@@ -16,6 +16,7 @@
 extern "C" {
 #include <glk.h>
 }
+#include "glkautosave.h"
 #endif
 
 #include "types.h"
@@ -53,7 +54,7 @@ public:
         Current,
     };
 
-    IO(const std::string *filename, Mode mode, Purpose purpose);
+    IO(const std::string *filename, Mode mode, Purpose purpose, StreamRock namedglkrock=StreamRock::None);
     IO(std::vector<uint8_t> buf, Mode mode);
     void operator=(IO const &) = delete;
     IO(const IO &) = delete;
@@ -140,7 +141,7 @@ private:
     bool textmode() const;
 
 #ifdef ZTERP_GLK
-    void open_as_glk(const std::function<frefid_t(glui32 usage, glui32 filemode)> &create_fref);
+    void open_as_glk(const std::function<frefid_t(glui32 usage, glui32 filemode)> &create_fref, StreamRock rock=StreamRock::None);
 #endif
 
     File m_file;

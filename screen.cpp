@@ -143,6 +143,7 @@ static long upper_window_width = 0;
 static winid_t errorwin;
 
 enum class WindowRock : glui32 {
+    None = 0,
     MainWin = 1,
     UpperWin = 2,
     // windows[2-7] are going to be copies of mainwin if they are used at all
@@ -164,6 +165,8 @@ void recover_glk_windows()
     winid_t win = nullptr;
     for (win = glk_window_iterate(nullptr, &rock); win; win = glk_window_iterate(win, &rock)) {
         switch (static_cast<WindowRock>(rock)) {
+        case WindowRock::None:
+            break;
         case WindowRock::MainWin:
             mainwin->id = win;
             break;

@@ -1134,7 +1134,7 @@ static bool output_stream(int16_t number, uint16_t table, bool formatted)
         store_word(0x10, word(0x10) | FLAGS2_TRANSCRIPT);
         if (transio == nullptr) {
             try {
-                transio = std::make_unique<IO>(options.transcript_name.get(), options.overwrite_transcript ? IO::Mode::WriteOnly : IO::Mode::Append, IO::Purpose::Transcript);
+                transio = std::make_unique<IO>(options.transcript_name.get(), options.overwrite_transcript ? IO::Mode::WriteOnly : IO::Mode::Append, IO::Purpose::Transcript, options.autosave_librarystate ? StreamRock::TranscriptStream : StreamRock::None);
             } catch (const IO::OpenError &) {
                 store_word(0x10, word(0x10) & ~FLAGS2_TRANSCRIPT);
                 streams.reset(OSTREAM_TRANSCRIPT);

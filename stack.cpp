@@ -1219,7 +1219,6 @@ static bool restore_quetzal(const std::shared_ptr<IO> &savefile, SaveType savety
 
     // §8.6.1.3
     if (close_window && zversion == 3) {
-        //###?
         close_upper_window();
     }
 
@@ -1229,7 +1228,6 @@ static bool restore_quetzal(const std::shared_ptr<IO> &savefile, SaveType savety
     // Standards Document says this bit is for V6 only, but Infocom’s
     // documentation says V4+, and A Mind Forever Voyaging (which is V4)
     // checks it.
-    //### additional things we don't need
     if (zversion >= 4 && (savetype == SaveType::Autosave || savetype == SaveType::AutosaveLib || savetype == SaveType::Meta)) {
         flags2 |= FLAGS2_STATUS;
     }
@@ -1247,7 +1245,6 @@ static bool restore_quetzal(const std::shared_ptr<IO> &savefile, SaveType savety
     write_header();
 
     // §6.1.2: Flags 2 should be preserved.
-    printf("### restore overwriting %x with %x\n", word(0x10), flags2);
     store_word(0x10, flags2);
 
     return true;

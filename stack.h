@@ -33,6 +33,7 @@ enum class SaveType {
     Normal,
     Meta,
     Autosave,
+    AutosaveLib,
 };
 
 enum class SaveOpcode {

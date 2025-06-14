@@ -707,7 +707,7 @@ static bool save_quetzal(IO &savefile, SaveType savetype, SaveOpcode saveopcode,
 {
     try {
         long file_size;
-        bool is_bfzs = savetype == SaveType::Meta || savetype == SaveType::Autosave;
+        bool is_bfzs = savetype == SaveType::Meta || savetype == SaveType::Autosave || savetype == SaveType::AutosaveLib;
 
         savefile.write_exact("FORM", 4);
         savefile.write32(0); // to be filled in
@@ -745,7 +745,7 @@ static bool save_quetzal(IO &savefile, SaveType savetype, SaveOpcode saveopcode,
             write_chunk(savefile, screen_write_scrn);
         }
 
-        if (savetype == SaveType::Autosave) {
+        if (savetype == SaveType::Autosave || savetype == SaveType::AutosaveLib) {
             write_chunk(savefile, write_undo);
             write_chunk(savefile, write_msav);
             write_chunk(savefile, random_write_rand);
@@ -940,7 +940,8 @@ static void read_bfzs_specific(IFF &iff, SaveType savetype, SaveOpcode &saveopco
 
     read_args(iff, saveopcode);
 
-    if (savetype == SaveType::Autosave && iff.find(IFF::TypeID("Rand"), size)) {
+    if ((savetype == SaveType::Autosave || savetype == SaveType::AutosaveLib)
+        && iff.find(IFF::TypeID("Rand"), size)) {
         random_read_rand(*iff.io());
     }
 
@@ -1084,7 +1085,7 @@ static bool restore_quetzal(const std::shared_ptr<IO> &savefile, SaveType savety
     uint32_t size;
     uint8_t ifhd[13];
     uint32_t newpc;
-    bool is_bfzs = savetype == SaveType::Meta || savetype == SaveType::Autosave;
+    bool is_bfzs = savetype == SaveType::Meta || savetype == SaveType::Autosave || savetype == SaveType::AutosaveLib;
     bool is_bfms = false;
     Stash stash;
     uint16_t flags2 = word(0x10);
@@ -1138,7 +1139,7 @@ static bool restore_quetzal(const std::shared_ptr<IO> &savefile, SaveType savety
             throw RestoreError("detected incompatible meta save: please file a bug report at https://bocfel.org/issues");
         }
 
-        if (is_bfzs && savetype == SaveType::Autosave) {
+        if (is_bfzs && (savetype == SaveType::Autosave || savetype == SaveType::AutosaveLib)) {
             if (iff->find(IFF::TypeID("Undo"), size)) {
                 read_undo(*iff->io(), size);
             }
@@ -1162,7 +1163,7 @@ static bool restore_quetzal(const std::shared_ptr<IO> &savefile, SaveType savety
             // the save file) unless this is disabled by the -H option.
             // We always redisplay after an autosave, unless we're doing
             // a library-state autosave, in which case we don't need to.
-            if ((savetype == SaveType::Autosave && !options.autosave_librarystate)
+            if ((savetype == SaveType::Autosave)
                 || !options.disable_history_playback) {
                 try {
                     long start = iff->io()->tell();
@@ -1206,7 +1207,7 @@ static bool restore_quetzal(const std::shared_ptr<IO> &savefile, SaveType savety
         // before anything happens, it is guaranteed that the stacks were
         // empty before the restore process started. This is faster and
         // simpler than stashing.
-        if (is_bfzs && savetype == SaveType::Autosave) {
+        if (is_bfzs && (savetype == SaveType::Autosave || savetype == SaveType::AutosaveLib)) {
             save_stacks[SaveStackType::Game].clear();
             save_stacks[SaveStackType::User].clear();
         }
@@ -1218,6 +1219,7 @@ static bool restore_quetzal(const std::shared_ptr<IO> &savefile, SaveType savety
 
     // §8.6.1.3
     if (close_window && zversion == 3) {
+        //###?
         close_upper_window();
     }
 
@@ -1227,7 +1229,8 @@ static bool restore_quetzal(const std::shared_ptr<IO> &savefile, SaveType savety
     // Standards Document says this bit is for V6 only, but Infocom’s
     // documentation says V4+, and A Mind Forever Voyaging (which is V4)
     // checks it.
-    if (zversion >= 4 && (savetype == SaveType::Autosave || savetype == SaveType::Meta)) {
+    //### additional things we don't need
+    if (zversion >= 4 && (savetype == SaveType::Autosave || savetype == SaveType::AutosaveLib || savetype == SaveType::Meta)) {
         flags2 |= FLAGS2_STATUS;
     }
 
@@ -1244,6 +1247,7 @@ static bool restore_quetzal(const std::shared_ptr<IO> &savefile, SaveType savety
     write_header();
 
     // §6.1.2: Flags 2 should be preserved.
+    printf("### restore overwriting %x with %x\n", word(0x10), flags2);
     store_word(0x10, flags2);
 
     return true;
@@ -1286,7 +1290,7 @@ bool do_save(SaveType savetype, SaveOpcode saveopcode)
     }
 
 #ifdef ZTERP_GLK
-    if (savetype == SaveType::Autosave && options.autosave_librarystate) {
+    if (savetype == SaveType::AutosaveLib) {
         if (!glkautosave_library_autosave()) {
             return false;
         }
@@ -1336,7 +1340,7 @@ void zsave()
 bool do_restore(SaveType savetype, SaveOpcode &saveopcode)
 {
 #ifdef ZTERP_GLK
-    if (savetype == SaveType::Autosave && options.autosave_librarystate) {
+    if (savetype == SaveType::AutosaveLib) {
         if (!glkautosave_library_autorestore()) {
             return false;
         }

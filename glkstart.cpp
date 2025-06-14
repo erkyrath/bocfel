@@ -62,6 +62,12 @@ int glkunix_startup_code(glkunix_startup_t *data)
         return 1;
     }
 
+    /* Not interrupt in the sense of SIGINT; it's called by RemGlk
+       when doing a -singleturn shutdown. That will involve closing
+       all streams. So we must finalize any IO objects with Type::Glk
+       first. */
+    glk_set_interrupt_handler(clean_up_glk_streams);
+
 #ifdef GARGLK
     if (!game_file.empty()) {
         auto story_name = game_file;
@@ -95,6 +101,7 @@ int glkunix_startup_code(glkunix_startup_t *data)
 
     return 1;
 }
+
 #elif defined(ZTERP_GLK_WINGLK)
 #include <cstdlib>
 

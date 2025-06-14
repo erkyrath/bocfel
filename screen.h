@@ -46,6 +46,10 @@ struct Color {
 
 void init_screen(bool first_run);
 
+#ifdef ZTERP_GLK_UNIX
+void clean_up_glk_streams();
+#endif
+
 bool create_mainwin();
 void create_graphicswin();
 bool create_statuswin();

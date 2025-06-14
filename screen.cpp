@@ -402,6 +402,17 @@ static Window *style_window()
 static std::bitset<5> streams;
 static std::unique_ptr<IO> scriptio, transio, perstransio;
 
+#ifdef ZTERP_GLK_UNIX
+
+void clean_up_glk_streams()
+{
+    /* transio may or may not be a Glk stream, but it's safest to clean
+       it up. */
+    transio = nullptr;
+}
+
+#endif
+
 class StreamTables {
 public:
     void push(uint16_t addr, bool formatted) {
@@ -1134,6 +1145,7 @@ static bool output_stream(int16_t number, uint16_t table, bool formatted)
         store_word(0x10, word(0x10) | FLAGS2_TRANSCRIPT);
         if (transio == nullptr) {
             try {
+                /* If autosave_librarystate, we open this as a Glk stream so that it will be part of the librarystate. */
                 transio = std::make_unique<IO>(options.transcript_name.get(), options.overwrite_transcript ? IO::Mode::WriteOnly : IO::Mode::Append, IO::Purpose::Transcript, options.autosave_librarystate ? StreamRock::TranscriptStream : StreamRock::None);
             } catch (const IO::OpenError &) {
                 store_word(0x10, word(0x10) & ~FLAGS2_TRANSCRIPT);

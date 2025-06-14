@@ -3036,7 +3036,8 @@ void zread_char()
     input.type = Input::Type::Char;
 
     if (options.autosave && !in_interrupt()) {
-        do_save(SaveType::Autosave, SaveOpcode::ReadChar);
+        SaveType savetype = (options.autosave_librarystate ? SaveType::AutosaveLib : SaveType::Autosave);
+        do_save(savetype, SaveOpcode::ReadChar);
     }
 
     if (zversion >= 4 && znargs > 1) {
@@ -3174,7 +3175,8 @@ static bool read_handler()
     uint16_t routine = zargs[3];
 
     if (options.autosave && !in_interrupt()) {
-        do_save(SaveType::Autosave, SaveOpcode::Read);
+        SaveType savetype = (options.autosave_librarystate ? SaveType::AutosaveLib : SaveType::Autosave);
+        do_save(savetype, SaveOpcode::Read);
     }
 
 #ifdef ZTERP_GLK

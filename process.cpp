@@ -300,11 +300,12 @@ void process_instructions()
 
     if (options.autosave && !options.skip_autorestore && !handled_autosave) {
         SaveOpcode saveopcode;
+        SaveType savetype = (options.autosave_librarystate ? SaveType::AutosaveLib : SaveType::Autosave);
 
         handled_autosave = true;
 
-        if (do_restore(SaveType::Autosave, saveopcode)) {
-            if (!options.autosave_librarystate) {
+        if (do_restore(savetype, saveopcode)) {
+            if (savetype == SaveType::Autosave) {
                 show_message("Continuing last session from autosave");
             }
             throw Operation::Restore(saveopcode);

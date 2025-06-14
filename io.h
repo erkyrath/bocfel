@@ -56,6 +56,9 @@ public:
 
     IO(const std::string *filename, Mode mode, Purpose purpose, StreamRock namedglkrock=StreamRock::None);
     IO(std::vector<uint8_t> buf, Mode mode);
+    IO(Mode mode, Purpose purpose, strid_t stream) : m_file(stream), m_type(Type::Glk), m_mode(mode), m_purpose(purpose) {
+    }
+    
     void operator=(IO const &) = delete;
     IO(const IO &) = delete;
     IO(IO &&) = default;

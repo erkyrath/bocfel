@@ -413,6 +413,29 @@ void clean_up_glk_streams()
 
 #endif
 
+#ifdef ZTERP_GLK
+
+void recover_glk_streams()
+{
+    transio = nullptr;
+
+    glui32 rock = 0;
+    strid_t str = nullptr;
+    for (str = glk_stream_iterate(nullptr, &rock); str; str = glk_stream_iterate(str, &rock)) {
+        switch (static_cast<StreamRock>(rock)) {
+        case StreamRock::None:
+            break;
+        case StreamRock::TranscriptStream:
+            transio = std::make_unique<IO>(IO::Mode::Append, IO::Purpose::Transcript, str);
+            break;
+        default:
+            break;
+        }
+    }
+}
+
+#endif
+
 class StreamTables {
 public:
     void push(uint16_t addr, bool formatted) {

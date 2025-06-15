@@ -1218,7 +1218,8 @@ static bool restore_quetzal(const std::shared_ptr<IO> &savefile, SaveType savety
     pc = newpc;
 
     // §8.6.1.3
-    if (close_window && zversion == 3) {
+    // Except that for AutosaveLib, we'll restore the upper window.
+    if (close_window && zversion == 3 && savetype != SaveType::AutosaveLib) {
         close_upper_window();
     }
 
@@ -1228,8 +1229,16 @@ static bool restore_quetzal(const std::shared_ptr<IO> &savefile, SaveType savety
     // Standards Document says this bit is for V6 only, but Infocom’s
     // documentation says V4+, and A Mind Forever Voyaging (which is V4)
     // checks it.
-    if (zversion >= 4 && (savetype == SaveType::Autosave || savetype == SaveType::AutosaveLib || savetype == SaveType::Meta)) {
+    if (zversion >= 4 && (savetype == SaveType::Autosave || savetype == SaveType::Meta)) {
         flags2 |= FLAGS2_STATUS;
+    }
+
+    if (savetype == SaveType::AutosaveLib) {
+        // Use the save file's FLAGS2_TRANSCRIPT.
+        if (word(0x10) & FLAGS2_TRANSCRIPT)
+            flags2 |= FLAGS2_TRANSCRIPT;
+        else
+            flags2 &= ~FLAGS2_TRANSCRIPT;
     }
 
     // §6.1.2.2: The save might be from a different interpreter with

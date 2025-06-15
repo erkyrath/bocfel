@@ -418,6 +418,7 @@ void clean_up_glk_streams()
 void recover_glk_streams()
 {
     transio = nullptr;
+    streams.reset(OSTREAM_TRANSCRIPT);
 
     glui32 rock = 0;
     strid_t str = nullptr;
@@ -427,6 +428,7 @@ void recover_glk_streams()
             break;
         case StreamRock::TranscriptStream:
             transio = std::make_unique<IO>(IO::Mode::Append, IO::Purpose::Transcript, str);
+            streams.set(OSTREAM_TRANSCRIPT);
             break;
         default:
             break;

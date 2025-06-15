@@ -1254,7 +1254,7 @@ static std::shared_ptr<IO> open_savefile(SaveType savetype, IO::Mode mode)
 {
     std::unique_ptr<std::string> filename;
 
-    if (savetype == SaveType::Autosave) {
+    if (savetype == SaveType::Autosave || savetype == SaveType::AutosaveLib) {
         filename = zterp_os_autosave_name();
         if (filename == nullptr) {
             return nullptr;
@@ -1264,7 +1264,7 @@ static std::shared_ptr<IO> open_savefile(SaveType savetype, IO::Mode mode)
     try {
         return std::make_shared<IO>(filename.get(), mode, IO::Purpose::Save);
     } catch (const IO::OpenError &) {
-        if (savetype != SaveType::Autosave) {
+        if (!(savetype == SaveType::Autosave || savetype == SaveType::AutosaveLib)) {
             warning("unable to open save file");
         }
 
@@ -1317,8 +1317,8 @@ void zsave()
     // 
     // (Note that we might have arrived here from zsave5().)
     //
-    if (options.autosave) {
-        do_save(SaveType::Autosave, SaveOpcode::Save);
+    if (options.autosave && options.autosave_librarystate) {
+        do_save(SaveType::AutosaveLib, SaveOpcode::Save);
     }
 
     bool success = do_save(SaveType::Normal, SaveOpcode::None);
@@ -1357,12 +1357,11 @@ void zrestore()
     // Autosave before blocking on the fileref prompt. (Which will
     // certainly happen down in the guts of do_restore(), because there
     // is no suggested filename.)
-    //
     // 
     // (Note that we might have arrived here from restore5().)
     //
-    if (options.autosave) {
-        do_save(SaveType::Autosave, SaveOpcode::Restore);
+    if (options.autosave && options.autosave_librarystate) {
+        do_save(SaveType::AutosaveLib, SaveOpcode::Restore);
     }
     
     SaveOpcode saveopcode;

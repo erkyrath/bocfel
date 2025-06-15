@@ -1180,6 +1180,11 @@ static bool output_stream(int16_t number, uint16_t table, bool formatted)
         }
     } else if (number == -2) {
         store_word(0x10, word(0x10) & ~FLAGS2_TRANSCRIPT);
+        /* If autosave_librarystate, we close the stream. (Keeping it open
+           in the background is unnecessary work.) */
+        if (options.transcript_name != nullptr && options.autosave_librarystate) {
+            transio = nullptr;
+        }
     }
 
     if (number == 3) {

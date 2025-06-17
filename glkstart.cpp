@@ -9,6 +9,7 @@
 #include "screen.h"
 #include "types.h"
 #include "zterp.h"
+#include "glkautosave.h"
 
 extern "C" {
 #include <glk.h>
@@ -44,9 +45,9 @@ glkunix_argumentlist_t glkunix_arguments[128] = {
 };
 
 #ifdef ZTERP_GLK_BLORB
-static strid_t load_file(const std::string &file)
+static strid_t load_file(const std::string &file, StreamRock rock)
 {
-    return glkunix_stream_open_pathname(const_cast<char *>(file.c_str()), 0, 0);
+    return glkunix_stream_open_pathname(const_cast<char *>(file.c_str()), 0, static_cast<glui32>(rock));
 }
 #endif
 
@@ -94,6 +95,7 @@ int glkunix_startup_code(glkunix_startup_t *data)
 
     return 1;
 }
+
 #elif defined(ZTERP_GLK_WINGLK)
 #include <cstdlib>
 
@@ -106,9 +108,9 @@ int InitGlk(unsigned int);
 }
 
 #ifdef ZTERP_GLK_BLORB
-static strid_t load_file(const std::string &file)
+static strid_t load_file(const std::string &file, StreamRock rock)
 {
-    frefid_t ref = winglk_fileref_create_by_name(fileusage_BinaryMode | fileusage_Data, const_cast<char *>(file.c_str()), 0, 0);
+    frefid_t ref = winglk_fileref_create_by_name(fileusage_BinaryMode | fileusage_Data, const_cast<char *>(file.c_str()), 0, static_cast<glui32>(rock));
 
     if (ref == nullptr) {
         return nullptr;
@@ -188,7 +190,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 }
 #else
 #ifdef ZTERP_GLK_BLORB
-#define load_file(file) nullptr
+#define load_file(file, rock) nullptr
 #endif
 #error Glk on this platform is not supported.
 #endif
@@ -201,7 +203,7 @@ static void load_resources()
 {
 #ifdef ZTERP_GLK_BLORB
     auto set_map = [](const std::string &blorb_file) {
-        strid_t file = load_file(blorb_file);
+        strid_t file = load_file(blorb_file, StreamRock::BlorbStream);
         if (file != nullptr) {
             if (giblorb_set_resource_map(file) == giblorb_err_None) {
                 screen_load_scale_info(blorb_file);

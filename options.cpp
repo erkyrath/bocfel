@@ -203,6 +203,9 @@ Options::Options() {
     STRING('Z', "Provide a file/device from which 32 bits will be read as a seed", true, random_device);
 
     BOOL  (0, "", true, autosave);
+    BOOL  (0, "", true, skip_autorestore);
+    STRING(0, "", true, autosave_directory);
+    BOOL  (0, "", true, autosave_librarystate);
     BOOL  (0, "", true, persistent_transcript);
     STRING(0, "", true, editor);
     BOOL  (0, "", true, warn_on_v6);

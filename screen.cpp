@@ -152,6 +152,48 @@ enum class WindowRock : glui32 {
     // graphics windows are not currently managed by this scheme
 };
 
+void recover_glk_windows()
+{
+    glui32 tmpwid, tmphgt;
+    
+    statuswin.id = nullptr;
+    errorwin = nullptr;
+    for (auto &win : windows)
+        win.id = nullptr;
+
+    glui32 rock = 0;
+    winid_t win = nullptr;
+    for (win = glk_window_iterate(nullptr, &rock); win; win = glk_window_iterate(win, &rock)) {
+        switch (static_cast<WindowRock>(rock)) {
+        case WindowRock::None:
+            break;
+        case WindowRock::MainWin:
+            mainwin->id = win;
+            break;
+        case WindowRock::UpperWin:
+            upperwin->id = win;
+            glk_window_get_size(upperwin->id, &tmpwid, &tmphgt);
+            upper_window_width = tmpwid;
+            upper_window_height = tmphgt;
+            break;
+        case WindowRock::StatusWin:
+            statuswin.id = win;
+            break;
+        case WindowRock::ErrorWin:
+            errorwin = win;
+            break;
+        }
+    }
+
+    // Redirect windows 2-7 -- see note in init_screen().
+    if (options.redirect_v6_windows) {
+        for (int i = 2; i < 8; i++) {
+            windows[i].id = windows[0].id;
+        }
+    }
+    
+}
+
 #ifdef ZTERP_GLK_GRAPHICS
 
 #ifndef GLK_MODULE_GARGLKWINSIZE
@@ -359,6 +401,42 @@ static Window *style_window()
 
 static std::bitset<5> streams;
 static std::unique_ptr<IO> scriptio, transio, perstransio;
+
+#ifdef ZTERP_GLK_UNIX
+
+void clean_up_glk_streams()
+{
+    /* transio may or may not be a Glk stream, but it's safest to clean
+       it up. */
+    transio = nullptr;
+}
+
+#endif
+
+#ifdef ZTERP_GLK
+
+void recover_glk_streams()
+{
+    transio = nullptr;
+    streams.reset(OSTREAM_TRANSCRIPT);
+
+    glui32 rock = 0;
+    strid_t str = nullptr;
+    for (str = glk_stream_iterate(nullptr, &rock); str; str = glk_stream_iterate(str, &rock)) {
+        switch (static_cast<StreamRock>(rock)) {
+        case StreamRock::None:
+            break;
+        case StreamRock::TranscriptStream:
+            transio = std::make_unique<IO>(IO::Mode::Append, IO::Purpose::Transcript, str);
+            streams.set(OSTREAM_TRANSCRIPT);
+            break;
+        default:
+            break;
+        }
+    }
+}
+
+#endif
 
 class StreamTables {
 public:
@@ -1092,7 +1170,8 @@ static bool output_stream(int16_t number, uint16_t table, bool formatted)
         store_word(0x10, word(0x10) | FLAGS2_TRANSCRIPT);
         if (transio == nullptr) {
             try {
-                transio = std::make_unique<IO>(options.transcript_name.get(), options.overwrite_transcript ? IO::Mode::WriteOnly : IO::Mode::Append, IO::Purpose::Transcript);
+                /* If autosave_librarystate, we open this as a Glk stream so that it will be part of the librarystate. */
+                transio = std::make_unique<IO>(options.transcript_name.get(), options.overwrite_transcript ? IO::Mode::WriteOnly : IO::Mode::Append, IO::Purpose::Transcript, options.autosave_librarystate ? StreamRock::TranscriptStream : StreamRock::None);
             } catch (const IO::OpenError &) {
                 store_word(0x10, word(0x10) & ~FLAGS2_TRANSCRIPT);
                 streams.reset(OSTREAM_TRANSCRIPT);
@@ -1101,6 +1180,11 @@ static bool output_stream(int16_t number, uint16_t table, bool formatted)
         }
     } else if (number == -2) {
         store_word(0x10, word(0x10) & ~FLAGS2_TRANSCRIPT);
+        /* If autosave_librarystate, we close the stream. (Keeping it open
+           in the background is unnecessary work.) */
+        if (options.transcript_name != nullptr && options.autosave_librarystate) {
+            transio = nullptr;
+        }
     }
 
     if (number == 3) {
@@ -2959,7 +3043,8 @@ void zread_char()
     input.type = Input::Type::Char;
 
     if (options.autosave && !in_interrupt()) {
-        do_save(SaveType::Autosave, SaveOpcode::ReadChar);
+        SaveType savetype = (options.autosave_librarystate ? SaveType::AutosaveLib : SaveType::Autosave);
+        do_save(savetype, SaveOpcode::ReadChar);
     }
 
     if (zversion >= 4 && znargs > 1) {
@@ -3097,7 +3182,8 @@ static bool read_handler()
     uint16_t routine = zargs[3];
 
     if (options.autosave && !in_interrupt()) {
-        do_save(SaveType::Autosave, SaveOpcode::Read);
+        SaveType savetype = (options.autosave_librarystate ? SaveType::AutosaveLib : SaveType::Autosave);
+        do_save(savetype, SaveOpcode::Read);
     }
 
 #ifdef ZTERP_GLK

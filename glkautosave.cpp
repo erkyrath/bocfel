@@ -84,6 +84,10 @@ bool glkautosave_library_autorestore()
         }
     }
 
+    /* Let the interpreter recover window IDs. */
+    recover_glk_windows();
+    recover_glk_streams();
+    
 #endif /* GLKUNIX_AUTOSAVE_FEATURES */
 
     return true;

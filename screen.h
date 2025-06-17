@@ -46,6 +46,10 @@ struct Color {
 
 void init_screen(bool first_run);
 
+#ifdef ZTERP_GLK_UNIX
+void clean_up_glk_streams();
+#endif
+
 bool create_mainwin();
 void create_graphicswin();
 bool create_statuswin();
@@ -76,6 +80,9 @@ void screen_message_prompt(const std::string &message);
 void screen_flush();
 
 #ifdef ZTERP_GLK
+
+void recover_glk_windows();
+void recover_glk_streams();
 
 #ifdef GLK_MODULE_GARGLKTEXT
 void update_color(int which, unsigned long color);

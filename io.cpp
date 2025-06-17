@@ -93,7 +93,13 @@ IO::IO(const std::string *filename, Mode mode, Purpose purpose, StreamRock named
     if (filename != nullptr) {
         // Use stdio in non-Glk mode always, and in Glk mode unless
         // non-stdio mode is requested.
-#if !defined(ZTERP_GLK) || !defined(ZTERP_NO_STDIO)
+#if !defined(ZTERP_GLK)
+        m_type = Type::StandardIO;
+        m_file = File(std::fopen(filename->c_str(), smode), true);
+        if (m_file.stdio == nullptr) {
+            throw OpenError();
+        }
+#elif !defined(ZTERP_NO_STDIO)
         if (namedglkrock == StreamRock::None) {
             m_type = Type::StandardIO;
             m_file = File(std::fopen(filename->c_str(), smode), true);

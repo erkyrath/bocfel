@@ -15,6 +15,7 @@
 long zterp_os_filesize(std::FILE *fp);
 std::unique_ptr<std::string> zterp_os_rcfile(bool create_parent);
 std::unique_ptr<std::string> zterp_os_autosave_name();
+std::unique_ptr<std::string> zterp_os_get_named_envvar(std::string key);
 std::unique_ptr<std::string> zterp_os_aux_file(const std::string &filename);
 void zterp_os_edit_file(const std::string &filename);
 std::vector<char> zterp_os_edit_notes(const std::vector<char> &notes);

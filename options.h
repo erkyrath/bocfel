@@ -69,6 +69,7 @@ struct Options {
     double v6_hack_max_scale = 4.0;
 
     void read_config();
+    void read_envvars();
     void process_arguments(int argc, char **argv);
     void help();
 

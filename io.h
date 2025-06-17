@@ -16,10 +16,15 @@
 extern "C" {
 #include <glk.h>
 }
-#include "glkautosave.h"
 #endif
 
 #include "types.h"
+
+enum class StreamRock : uint32_t {
+    None = 0,
+    BlorbStream = 1,
+    TranscriptStream = 2,
+};
 
 class IO {
 public:

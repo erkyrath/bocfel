@@ -70,7 +70,7 @@ bool IO::textmode() const {
 // prompt. This is a headache.
 //
 // Prompting is assumed to be necessary if “filename” is null.
-IO::IO(const std::string *filename, Mode mode, Purpose purpose) :
+IO::IO(const std::string *filename, Mode mode, Purpose purpose, StreamRock namedglkrock) :
     m_mode(mode),
     m_purpose(purpose)
 {
@@ -102,13 +102,13 @@ IO::IO(const std::string *filename, Mode mode, Purpose purpose) :
 #else
         open_as_glk([&filename](glui32 usage, glui32) {
             return glkunix_fileref_create_by_name_uncleaned(usage, filename->c_str(), 0);
-        });
+        }, namedglkrock);
 #endif
     } else { // Prompt.
 #ifdef ZTERP_GLK
         open_as_glk([](glui32 usage, glui32 filemode) {
             return glk_fileref_create_by_prompt(usage, filemode, 0);
-        });
+        }, namedglkrock);
 #else
         std::string fn, prompt;
 
@@ -144,7 +144,7 @@ IO::IO(const std::string *filename, Mode mode, Purpose purpose) :
 }
 
 #ifdef ZTERP_GLK
-void IO::open_as_glk(const std::function<frefid_t(glui32 usage, glui32 filemode)> &create_fref)
+void IO::open_as_glk(const std::function<frefid_t(glui32 usage, glui32 filemode)> &create_fref, StreamRock rock)
 {
     frefid_t ref;
     glui32 usage, filemode;
@@ -187,7 +187,7 @@ void IO::open_as_glk(const std::function<frefid_t(glui32 usage, glui32 filemode)
     }
 
     m_type = Type::Glk;
-    m_file = File(glk_stream_open_file(ref, filemode, 0));
+    m_file = File(glk_stream_open_file(ref, filemode, static_cast<glui32>(rock)));
     glk_fileref_destroy(ref);
     if (m_file.glk == nullptr) {
         throw OpenError();

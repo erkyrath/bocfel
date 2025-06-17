@@ -94,10 +94,17 @@ IO::IO(const std::string *filename, Mode mode, Purpose purpose, StreamRock named
         // Use stdio in non-Glk mode always, and in Glk mode unless
         // non-stdio mode is requested.
 #if !defined(ZTERP_GLK) || !defined(ZTERP_NO_STDIO)
-        m_type = Type::StandardIO;
-        m_file = File(std::fopen(filename->c_str(), smode), true);
-        if (m_file.stdio == nullptr) {
-            throw OpenError();
+        if (namedglkrock == StreamRock::None) {
+            m_type = Type::StandardIO;
+            m_file = File(std::fopen(filename->c_str(), smode), true);
+            if (m_file.stdio == nullptr) {
+                throw OpenError();
+            }
+        }
+        else {
+            open_as_glk([&filename](glui32 usage, glui32 filemode) {
+                return glk_fileref_create_by_name(usage, const_cast<char *>(filename->c_str()), 0);
+            }, namedglkrock);
         }
 #else
         open_as_glk([&filename](glui32 usage, glui32) {

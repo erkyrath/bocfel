@@ -28,7 +28,6 @@ screen.o: unicode.h zterp.h
 sound.o: sound.h types.h iff.h io.h process.h stack.h zterp.h
 stack.o: stack.h types.h branch.h iff.h io.h memory.h meta.h options.h
 stack.o: osdep.h screen.h util.h process.h random.h stash.h zterp.h
-stack.o: glkautosave.h
 stash.o: stash.h types.h
 unicode.o: unicode.h types.h memory.h options.h stack.h util.h zterp.h
 util.o: util.h types.h process.h stack.h screen.h iff.h io.h zterp.h

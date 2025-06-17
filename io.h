@@ -15,6 +15,7 @@
 #ifdef ZTERP_GLK
 extern "C" {
 #include <glk.h>
+#include "glkautosave.h"
 }
 #endif
 

@@ -7,8 +7,8 @@ enum class StreamRock : glui32 {
     TranscriptStream = 2,
 };
 
-/* Currently this header just declares the StreamRock enum. I'll add
-   some function declarations in a later patch. */
+bool glkautosave_library_autosave();
+bool glkautosave_library_autorestore();
 
 #endif
 

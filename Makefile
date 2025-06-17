@@ -15,7 +15,7 @@ ifdef FAST
 endif
 
 ifdef GLK
-    SRCS+=	glkstart.cpp
+    SRCS+=	glkstart.cpp glkautosave.cpp
     CXXFLAGS+=	-I$(GLK)
     MACROS+=	-DZTERP_GLK
 

@@ -33,12 +33,17 @@ enum class SaveType {
     Normal,
     Meta,
     Autosave,
+    AutosaveLib,
 };
 
 enum class SaveOpcode {
     None = -1,
     Read = 0,
     ReadChar = 1,
+    // Yes, we can autosave in the middle of a @save or @restore! It's the
+    // fileref prompt that does it, not the save operation.
+    Save = 2,
+    Restore = 3,
 };
 
 bool do_save(SaveType savetype, SaveOpcode saveopcode);

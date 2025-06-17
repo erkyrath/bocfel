@@ -39,3 +39,5 @@ zterp.o: meta.h options.h stack.h osdep.h screen.h util.h patches.h process.h
 zterp.o: random.h sound.h unicode.h v1234.h
 glkstart.o: options.h stack.h types.h screen.h iff.h io.h glkautosave.h
 glkstart.o: util.h zterp.h
+glkautosave.o: options.h stack.h types.h osdep.h screen.h iff.h io.h
+glkautosave.o: glkautosave.h util.h
